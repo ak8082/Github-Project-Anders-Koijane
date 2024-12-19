@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recommended Calorie Intake for Weight Gain</title>
+    <title>Recommended Calorie Intake</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,7 +55,7 @@
 <body>
 
     <div class="container">
-        <h2>Calculate Recommended Calorie Intake for Weight Gain</h2>
+        <h2>Calculate Recommended Calorie Intake</h2>
         <form id="calorieForm">
             <label for="weight">Enter your weight (lbs):</label>
             <input type="number" id="weight" required>
@@ -70,6 +70,13 @@
             <select id="gender">
                 <option value="male">Male</option>
                 <option value="female">Female</option>
+            </select>
+
+            <label for="goal">Select your goal:</label>
+            <select id="goal">
+                <option value="maintenance">Maintenance (No Change)</option>
+                <option value="gain">Healthy Weight Gain</option>
+                <option value="loss">Healthy Weight Loss</option>
             </select>
             
             <button type="submit">Calculate</button>
@@ -87,6 +94,7 @@
             const height = parseInt(document.getElementById('height').value);
             const age = parseInt(document.getElementById('age').value);
             const gender = document.getElementById('gender').value;
+            const goal = document.getElementById('goal').value;
             
             // Convert weight from lbs to kg (1 lb = 0.453592 kg)
             const weightInKg = weight * 0.453592;
@@ -103,14 +111,20 @@
                 bmr = 655.1 + (9.563 * weightInKg) + (1.850 * heightInCm) - (4.676 * age);
             }
 
-            const result = `Your recommended daily calorie intake for maintenance is approximately ${Math.round(bmr)} calories.`;
+            let recommendedCalories = bmr;
 
-            // For weight gain, typically add 500-1000 calories to the maintenance intake
-            const weightGainCalories = Math.round(bmr + 500);
-            const weightGainResult = `For weight gain, you should aim for approximately ${weightGainCalories} calories per day.`;
+            if (goal === "gain") {
+                // For healthy weight gain, add 500-1000 calories
+                recommendedCalories = Math.round(bmr + 500); // Moderate weight gain
+            } else if (goal === "loss") {
+                // For healthy weight loss, subtract 500-750 calories
+                recommendedCalories = Math.round(bmr - 500); // Moderate weight loss
+            }
 
-            // Recommended foods for weight gain
-            const foods = [
+            const result = `Your recommended daily calorie intake for ${goal === 'maintenance' ? 'maintenance' : (goal === 'gain' ? 'weight gain' : 'weight loss')} is approximately ${recommendedCalories} calories.`;
+
+            // Recommended foods for healthy weight gain
+            const foodsGain = [
                 "Nuts and seeds (e.g., almonds, walnuts, chia seeds)",
                 "Nut butters (peanut butter, almond butter)",
                 "Whole grains (e.g., quinoa, oats, brown rice)",
@@ -123,12 +137,31 @@
                 "Healthy oils (e.g., olive oil, coconut oil)"
             ];
 
-            const foodsList = foods.map(food => `<li>${food}</li>`).join("");
+            // Recommended foods for healthy weight loss
+            const foodsLoss = [
+                "Leafy greens (e.g., spinach, kale, lettuce)",
+                "Lean proteins (e.g., chicken breast, turkey, tofu)",
+                "Whole grains (e.g., quinoa, brown rice, whole wheat)",
+                "Fruits (e.g., berries, apples, oranges)",
+                "Vegetables (e.g., broccoli, carrots, cauliflower)",
+                "Legumes (e.g., lentils, chickpeas, black beans)",
+                "Nuts in moderation (e.g., almonds, walnuts)",
+                "Low-fat dairy (e.g., skim milk, low-fat yogurt)"
+            ];
+
+            let foodsList = [];
+            if (goal === "gain") {
+                foodsList = foodsGain;
+            } else if (goal === "loss") {
+                foodsList = foodsLoss;
+            }
+
+            const foodsHTML = foodsList.map(food => `<li>${food}</li>`).join("");
 
             document.getElementById('result').innerHTML = result;
             document.getElementById('foods').innerHTML = `
-                <h3>Recommended Foods for Weight Gain:</h3>
-                <ul>${foodsList}</ul>
+                <h3>Recommended Foods for ${goal === 'gain' ? 'Weight Gain' : 'Weight Loss'}:</h3>
+                <ul>${foodsHTML}</ul>
             `;
         });
     </script>
