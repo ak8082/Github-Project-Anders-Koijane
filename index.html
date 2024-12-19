@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recommended Calorie Intake</title>
+    <title>Recommended Calorie Intake for Weight Gain</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,20 +38,30 @@
         button:hover {
             background-color: #45a049;
         }
-        .result {
+        .result, .foods {
             text-align: center;
             font-size: 18px;
             margin-top: 20px;
+        }
+        .foods ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .foods ul li {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Calculate Recommended Calorie Intake</h2>
+        <h2>Calculate Recommended Calorie Intake for Weight Gain</h2>
         <form id="calorieForm">
             <label for="weight">Enter your weight (lbs):</label>
             <input type="number" id="weight" required>
+            
+            <label for="height">Enter your height (inches):</label>
+            <input type="number" id="height" required>
             
             <label for="age">Enter your age:</label>
             <input type="number" id="age" required>
@@ -66,6 +76,7 @@
         </form>
         
         <div class="result" id="result"></div>
+        <div class="foods" id="foods"></div>
     </div>
 
     <script>
@@ -73,23 +84,52 @@
             e.preventDefault();
             
             const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseInt(document.getElementById('height').value);
             const age = parseInt(document.getElementById('age').value);
             const gender = document.getElementById('gender').value;
             
             // Convert weight from lbs to kg (1 lb = 0.453592 kg)
             const weightInKg = weight * 0.453592;
             
-            // Basal Metabolic Rate (BMR) calculation
+            // Convert height from inches to cm (1 inch = 2.54 cm)
+            const heightInCm = height * 2.54;
+
+            // Basal Metabolic Rate (BMR) calculation using Mifflin-St Jeor equation
             let bmr;
 
             if (gender === 'male') {
-                bmr = 66.5 + (13.75 * weightInKg) + (5.003 * 160) - (6.75 * age);
+                bmr = 66.5 + (13.75 * weightInKg) + (5.003 * heightInCm) - (6.75 * age);
             } else {
-                bmr = 655.1 + (9.563 * weightInKg) + (1.850 * 160) - (4.676 * age);
+                bmr = 655.1 + (9.563 * weightInKg) + (1.850 * heightInCm) - (4.676 * age);
             }
 
-            const result = `Your recommended daily calorie intake is approximately ${Math.round(bmr)} calories.`;
+            const result = `Your recommended daily calorie intake for maintenance is approximately ${Math.round(bmr)} calories.`;
+
+            // For weight gain, typically add 500-1000 calories to the maintenance intake
+            const weightGainCalories = Math.round(bmr + 500);
+            const weightGainResult = `For weight gain, you should aim for approximately ${weightGainCalories} calories per day.`;
+
+            // Recommended foods for weight gain
+            const foods = [
+                "Nuts and seeds (e.g., almonds, walnuts, chia seeds)",
+                "Nut butters (peanut butter, almond butter)",
+                "Whole grains (e.g., quinoa, oats, brown rice)",
+                "Lean meats (e.g., chicken, turkey, lean beef)",
+                "Fatty fish (e.g., salmon, mackerel)",
+                "Full-fat dairy (e.g., whole milk, cheese, yogurt)",
+                "Avocados",
+                "Bananas",
+                "Dried fruits (e.g., apricots, raisins)",
+                "Healthy oils (e.g., olive oil, coconut oil)"
+            ];
+
+            const foodsList = foods.map(food => `<li>${food}</li>`).join("");
+
             document.getElementById('result').innerHTML = result;
+            document.getElementById('foods').innerHTML = `
+                <h3>Recommended Foods for Weight Gain:</h3>
+                <ul>${foodsList}</ul>
+            `;
         });
     </script>
 </body>
