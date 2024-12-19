@@ -83,6 +83,7 @@
         </form>
         
         <div class="result" id="result"></div>
+        <div class="bmiRecommendation" id="bmiRecommendation"></div>
         <div class="foods" id="foods"></div>
     </div>
 
@@ -99,16 +100,36 @@
             // Convert weight from lbs to kg (1 lb = 0.453592 kg)
             const weightInKg = weight * 0.453592;
             
-            // Convert height from inches to cm (1 inch = 2.54 cm)
-            const heightInCm = height * 2.54;
+            // Convert height from inches to meters (1 inch = 0.0254 meters)
+            const heightInMeters = height * 0.0254;
+
+            // BMI calculation
+            const bmi = weightInKg / (heightInMeters ** 2);
+
+            let bmiCategory = "";
+            let bmiRecommendation = "";
+
+            if (bmi < 18.5) {
+                bmiCategory = "Underweight";
+                bmiRecommendation = "You should gain weight to reach a healthier weight.";
+            } else if (bmi >= 18.5 && bmi <= 24.9) {
+                bmiCategory = "Normal weight";
+                bmiRecommendation = "You are at a healthy weight. Consider maintaining your current weight.";
+            } else if (bmi >= 25 && bmi <= 29.9) {
+                bmiCategory = "Overweight";
+                bmiRecommendation = "You should consider losing weight for better health.";
+            } else {
+                bmiCategory = "Obese";
+                bmiRecommendation = "You should consider losing weight for better health.";
+            }
 
             // Basal Metabolic Rate (BMR) calculation using Mifflin-St Jeor equation
             let bmr;
 
             if (gender === 'male') {
-                bmr = 66.5 + (13.75 * weightInKg) + (5.003 * heightInCm) - (6.75 * age);
+                bmr = 66.5 + (13.75 * weightInKg) + (5.003 * heightInMeters * 100) - (6.75 * age);
             } else {
-                bmr = 655.1 + (9.563 * weightInKg) + (1.850 * heightInCm) - (4.676 * age);
+                bmr = 655.1 + (9.563 * weightInKg) + (1.850 * heightInMeters * 100) - (4.676 * age);
             }
 
             let recommendedCalories = bmr;
@@ -159,6 +180,10 @@
             const foodsHTML = foodsList.map(food => `<li>${food}</li>`).join("");
 
             document.getElementById('result').innerHTML = result;
+            document.getElementById('bmiRecommendation').innerHTML = `
+                <h3>Your BMI: ${bmi.toFixed(2)} (${bmiCategory})</h3>
+                <p>${bmiRecommendation}</p>
+            `;
             document.getElementById('foods').innerHTML = `
                 <h3>Recommended Foods for ${goal === 'gain' ? 'Weight Gain' : 'Weight Loss'}:</h3>
                 <ul>${foodsHTML}</ul>
@@ -167,3 +192,4 @@
     </script>
 </body>
 </html>
+
